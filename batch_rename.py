@@ -17,6 +17,16 @@ with open(mapping_file, mode='r', encoding='utf-8-sig') as f:
         new_file = row['new_name'].strip()
         
         if os.path.exists(old_file):
+            # Resolve potential filename collisions automatically
+            if os.path.exists(new_file) and old_file != new_file:
+                base, ext = os.path.splitext(new_file)
+                counter = 2
+                alt_new_file = f"{base}_{counter}{ext}"
+                while os.path.exists(alt_new_file):
+                    counter += 1
+                    alt_new_file = f"{base}_{counter}{ext}"
+                new_file = alt_new_file
+
             os.rename(old_file, new_file)
             print(f"Renamed: '{old_file}' -> '{new_file}'")
             renamed_count += 1
